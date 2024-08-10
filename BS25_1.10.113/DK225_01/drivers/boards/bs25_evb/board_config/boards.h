@@ -22,10 +22,10 @@ extern "C" {
  * @ingroup  boards
  * @{
  */
-
-#define BSP_LED_0  S_AGPIO13
-#define BSP_LED_1  S_MGPIO24
-#define BSP_LED_2  S_MGPIO25
+#define BSP_LED_1  S_AGPIO5
+#define BSP_LED_2  S_AGPIO8
+#define BSP_LED_3  S_AGPIO12
+#define BSP_LED_4  S_AGPIO13
 
 #define BUTTON_0 S_MGPIO28
 
