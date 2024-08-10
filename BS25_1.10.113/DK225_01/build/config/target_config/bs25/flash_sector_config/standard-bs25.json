@@ -1,0 +1,45 @@
+{
+   "Partition_Tbl":{
+      "image_id" : "0x4B87A52D",
+      "stru_ver" : "0x00010000",
+      "version"  : "0x00000000",
+      "param_info_description" : [
+         "Address Constraints: flash type must fill with relative address, RAM regions must fill with absolute address.",
+         "Item ID Constraints: ssb type:                       0x00 ~ 0x0F, Relative address, Size",
+         "                     root public key and signature:  0x10 ~ 0x1F, Relative address, Size",
+         "                     firmware on flash:              0x20 ~ 0x2F, Relative address, Size",
+         "                     data on flash:                  0x30 ~ 0x3F, Relative address, Size",
+
+         "Fixed item id:  0x00: ssb",
+         "                0x01: ssb_backup",
+
+         "                0x10: rootpubkey",
+         "                0x11: signature certificate",
+         "                0x12: ssb image signature",
+         "                0x13: signature certificate backup",
+         "                0x14: ssb image signature backup",
+         "                0x15: bt image signature",
+         "                0x16: app image signature",
+         "                0x20: bt image",
+         "                0x21: app image",
+         "                0x30: nv data",
+         "                0x31: fota data"
+      ],
+      "param_info" : [
+         ["0x00", "0x00000000", "0x00018000"],
+         ["0x01", "0x00018000", "0x00014000"],
+         ["0x10", "0x00000000", "0x00000000"],
+         ["0x11", "0x00000000", "0x00000000"],
+         ["0x12", "0x00000000", "0x00000000"],
+         ["0x13", "0x00000000", "0x00000000"],
+         ["0x14", "0x00000000", "0x00000000"],
+         ["0x15", "0x00000000", "0x00000000"],
+         ["0x16", "0x00000000", "0x00000000"],
+         ["0x20", "0x0002c000", "0x00050000"],
+         ["0x21", "0x0007c000", "0x00084000"],
+         ["0x30", "0x001fc000", "0x00004000"],
+         ["0x31", "0x00101000", "0x000A0000"]
+      ]
+   },
+   "Output_file_prefix":"AIoT"
+}

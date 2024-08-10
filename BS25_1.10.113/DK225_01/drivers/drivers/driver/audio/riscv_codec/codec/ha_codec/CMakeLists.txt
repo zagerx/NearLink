@@ -1,0 +1,6 @@
+add_subdirectory_if_exist(sbc_dec)
+add_subdirectory_if_exist(sbc_enc)
+add_subdirectory_if_exist(l2hc_dec)
+add_subdirectory_if_exist(l2hc_enc)
+add_subdirectory_if_exist(opus_dec)
+add_subdirectory_if_exist(opus_enc)

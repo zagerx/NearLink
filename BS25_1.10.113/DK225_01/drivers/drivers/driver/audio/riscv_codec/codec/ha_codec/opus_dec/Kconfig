@@ -1,0 +1,23 @@
+#===============================================================================
+# @brief    Kconfig file.
+# Copyright (c) @CompanyNameMagicTag 2022-2022. All rights reserved.
+#===============================================================================
+
+config OPUS_DEC
+    bool
+    prompt "OPUS_DEC"
+    default y
+    help
+        This option means support audio OPUS_DEC.
+
+if OPUS_DEC
+config OPUS_DEC_30K_TO_ITCM
+    bool
+    prompt "opus dec link 30k to ITCM"
+    default y
+
+config OPUS_DEC_ALL_TO_ITCM
+    bool
+    prompt "opus dec link all files to ITCM"
+    default n
+endif

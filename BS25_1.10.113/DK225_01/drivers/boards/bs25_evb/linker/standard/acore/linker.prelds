@@ -1,0 +1,578 @@
+/******************************************************************************
+ * @brief    LDS file setting the memory and code locations
+ * Copyright (c) 2021 @CompanyNameMagicTag
+******************************************************************************/
+
+#include "memory_config.h"
+OUTPUT_ARCH(riscv)
+ENTRY(_start)
+
+#define UBS_MODULE \
+    *(.text.ArchAtomicInc* .text.fhid_send_data* .text.dwc_otg_core_ep_complete* \
+    .text.LOS_AtomicInc* .text.LOS_IntLock* \
+    .text.LOS_SpinUnlockRestore* .text.LOS_SpinLockSave* .text.udc_interrupt* \
+    .text.ArchAtomicDec* .text.usb_dma_cache_flush* \
+    .text.endpoint_arg_set* .text.LOS_AtomicDec* .text.hid_release_lock* \
+    .text.LOS_IntRestore* .text.check_and_add_hid_operations_count* \
+    .text.handle_normal_endpoint* .text.fhid_input_req_complete* .text.hid_write_data* \
+    .text.usbd_ep_queue* .text.dwc_otg_common_irq* .text.dwc_otg_ep_start_transfer* \
+    .text.hid_acquire_lock* .text.hid_submit_data* .text.dwc_otg_irq* \
+    .text.sub_hid_operations_count* .text.dwc_otg_pcd_irq* \
+    .text.dwc_otg_ep_req_start* .text.ArchWrite32* .text.ArchRead32* \
+    .text.usb_dma_cache_invalid* .text.DWC_MODIFY_REG32* .text.DWC_WRITE_REG32* \
+    .text.DWC_READ_REG32* .text.dwc_otg_epn_start_transfer* .text.handle_in_endpoint_intr*\
+    .text.mouse_read_reg* .text.mouse_burst_read* .text.mouse_opration* .text.qdec_usb_report_callback* \
+    .text.usb_sof_intr_callback* .text.paw3395_get_xy* .text.mouse_spi_burst_read* \
+    .text.__riscv_* .text.usb_mouse_report_callback* .text.mouse_cb*)
+
+#define MOUSE_FUNC \
+    *(.text.usb_mouse_report_callback* .text.get_sensor_xy_status* .text.usb_mouse_send_data* \
+    .text.get_sensor_xy_status* .text.paw3395_get_xy* .text.paw_3395_motion_is_active* .text.sensor_burst_read* \
+    .text.usb_mouse_set_status* .text.usb_mouse_status_callback* .text.mouse_sensor_cb* \
+    .text.battery_set_sample_start* .text.set_app_wakeup* .text.mode_switch_usb_change* .text.mode_switch_detect_set* \
+    .text.mouse_sensor_report_callback* .text.motion_detect_func* .text.usb_get_index* .text.user_usb_sof_intr_callback* )\
+
+#define DONGLE_FUNC \
+    *(.text.g_law_latency_key_value_set_callback* .text.key_value_set_cb* \
+    .text.law_latency_report_cb* .text.g_law_latency_report_callback* \
+    .text.usb_dongle_send_data* .text.usb_dongle_wakeup_pc* .text.usb_device_is_host_suspended* )
+
+/* FLASH sector size is 2K */
+/* make this table consistent with the configuration given by the security core */
+MEMORY
+{
+#if defined USE_EMBED_FLASH
+    FLASH_PROGRAM                 : ORIGIN = EMBED_FLASH_START + APP_FLASH_REGION_OFFSET, LENGTH = APP_PROGRAM_LENGTH
+#else
+    FLASH_PROGRAM                 : ORIGIN = FLASH_START + APP_FLASH_REGION_OFFSET, LENGTH = APP_PROGRAM_LENGTH
+#endif
+
+    ITCM                          : ORIGIN = APP_RAMTEXT_ORIGIN,          LENGTH = APP_RAMTEXT_LENGTH
+    DTCM                          : ORIGIN = APP_DTCM_ORIGIN,             LENGTH = APP_RAM_LENGTH - HADM_POOL_SIZE
+    HADM_DTCM                     : ORIGIN = ORIGIN(DTCM) + LENGTH(DTCM), LENGTH = HADM_POOL_SIZE
+    IPC_SHARE_MEM                 : ORIGIN = IPC_MAILBOX_REGION_START,    LENGTH = IPC_MAILBOX_REGION_LENGTH
+    PRESERVE_SHARE_MEM            : ORIGIN = PRESERVED_REGION_ORIGIN,     LENGTH = PRESERVED_REGION_LENGTH
+    SYSTEM_CLOCKS                 : ORIGIN = SYSTEM_CLK_REGION_START,     LENGTH = SYSTEM_CLK_REGION_LENGTH
+    SYSTEM_STATUS                 : ORIGIN = SYSTEM_STATUS_ORIGIN,        LENGTH = SYSTEM_STATUS_LENGTH
+    CPUTRACE_RAM                  : ORIGIN = MCPU_TRACE_MEM_REGION_START, LENGTH = CPU_TRACE_MEM_REGION_LENGTH
+    AFE_DIAG_MEM                  : ORIGIN = AFE_SHARE_MEM_ORIGIN,        LENGTH = AFE_SHARE_MEM_LENGTH
+#ifdef OS_DFX_SUPPORT
+    OS_INFO_DFX                   : ORIGIN = MASSDATA_REGION_START,        LENGTH = MASSDATA_REGION_LENGTH
+#endif
+}
+
+SECTIONS
+{
+    /* Vectors */
+    . = 0;
+    __CODE_START__ = ORIGIN(FLASH_PROGRAM);
+    startup :
+    {
+        KEEP (*(.text.entry))
+        . = ALIGN(8);
+    } > ITCM AT > FLASH_PROGRAM
+
+    .version_str :
+    {
+        . = ALIGN(8);
+        KEEP (*(.flash_version))
+        . = ALIGN(8);
+    } > FLASH_PROGRAM
+
+#if defined(LITEOS_208)
+    /* liteos v208 kernel init */
+    .sysintcall.init : {
+        . = ALIGN(4);
+        __sysinitcall_start = .;
+        __sysinitcall0_start = .;
+        KEEP(*(SORT(.sysinitcall_level0_*)))
+        __sysinitcall1_start = .;
+        KEEP(*(SORT(.sysinitcall_level1_*)))
+        __sysinitcall2_start = .;
+        KEEP(*(SORT(.sysinitcall_level2_*)))
+        __sysinitcall3_start = .;
+        KEEP(*(SORT(.sysinitcall_level3_*)))
+        __sysinitcall4_start = .;
+        KEEP(*(SORT(.sysinitcall_level4_*)))
+        __sysinitcall5_start = .;
+        KEEP(*(SORT(.sysinitcall_level5_*)))
+        __sysinitcall6_start = .;
+        KEEP(*(SORT(.sysinitcall_level6_*)))
+        __sysinitcall7_start = .;
+        KEEP(*(SORT(.sysinitcall_level7_*)))
+        __sysinitcall_end = .;
+    } > FLASH_PROGRAM
+
+    /* liteos compat linux initcall sections */
+    .initcall.init : {
+        __initcall0_start = ABSOLUTE(.);
+        KEEP(*(SORT (.initcall0.init)))
+        __initcall0_end = ABSOLUTE(.);
+
+        __initcall1_start = ABSOLUTE(.);
+        KEEP(*(SORT (.initcall1.init)))
+        __initcall1_end = ABSOLUTE(.);
+
+        __initcall2_start = ABSOLUTE(.);
+        KEEP(*(SORT (.initcall2.init)))
+        __initcall2_end = ABSOLUTE(.);
+
+        __initcall3_start = ABSOLUTE(.);
+        KEEP(*(SORT (.initcall3.init)))
+        __initcall3_end = ABSOLUTE(.);
+
+        __initcall4_start = ABSOLUTE(.);
+        KEEP(*(SORT (.initcall4.init)))
+        __initcall4_end = ABSOLUTE(.);
+
+        __initcall5_start = ABSOLUTE(.);
+        KEEP(*(SORT (.initcall5.init)))
+        __initcall5_end = ABSOLUTE(.);
+
+        __initcall6_start = ABSOLUTE(.);
+        KEEP(*(SORT (.initcall6.init)))
+        __initcall6_end = ABSOLUTE(.);
+
+        __initcall7_start = ABSOLUTE(.);
+        KEEP(*(SORT (.initcall7.init)))
+        __initcall7_end = ABSOLUTE(.);
+    } > FLASH_PROGRAM
+
+#ifdef BS25_SUPPORT_CPP
+    .init_array  ALIGN(0x4) : {
+        . = ALIGN(4);
+        __init_array_start = ABSOLUTE(.);
+        KEEP(*(SORT(.init_array*)))
+        __init_array_end = ABSOLUTE(.);
+        __fini_array_start = .;
+        KEEP(*(SORT(.fini_array*)))
+        __fini_array_end = .;
+    } > FLASH_PROGRAM
+    __fast_end = .;
+#endif
+#endif
+    __program_size__ =.;
+
+    .stacks (NOLOAD): ALIGN(16)
+    {
+        g_system_stack_begin = .;
+        . += APP_USER_STACK_LEN;
+        . = ALIGN(16);
+        __stack_top__ = .;
+        . += APP_IRQ_STACK_LEN;
+        . = ALIGN(16);
+#if defined(LITEOS_208)
+        __irq_stack_top = .;
+        . += APP_EXCP_STACK_LEN;
+        . = ALIGN(16);
+        __exc_stack_top = .;
+        . += APP_NMI_STACK_LEN;
+        . = ALIGN(16);
+        __nmi_stack_top = .;
+#else
+        __irq_stack_top__ = .;
+        . += APP_EXCP_STACK_LEN;
+        . = ALIGN(16);
+        __excp_stack_top__ = .;
+        . += APP_NMI_STACK_LEN;
+        . = ALIGN(16);
+        __nmi_stack_top__ = .;
+#endif
+        g_system_stack_end = .;
+    } > DTCM
+    g_system_stack_size = g_system_stack_end - g_system_stack_begin;
+    g_stack_system = g_system_stack_size;
+}
+
+SECTIONS
+{
+    .c_flash_text :
+    {
+        *libc.a:*vfprint*.o*  (.text .text* .rodata .rodata* .srodata .srodata*)
+        *libgcc.a:addtf3.o*  (.text .text* .rodata .rodata* .srodata .srodata*)
+    } > FLASH_PROGRAM
+    .plt_ramtext :
+    {
+        /* Main code */
+        . = ALIGN(8);
+        __ramtext_load__ = LOADADDR(.plt_ramtext);
+        __ramtext_begin__ = .;
+        *application/bs25/bs25_acore/libbs25_app_standard.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+
+        /* LiteOS code */
+        *libliteos*.a:*.o* (.text *.text* .rodata .rodata* .srodata .srodata*)
+        *libriscv*.a:*.o* (.text *.text* .rodata .rodata* .srodata .srodata*)
+        *libinterrupt*.a:*.o* (.text *.text* .rodata .rodata* .srodata .srodata*)
+        *libtargets*.a:*.o* (.text *.text* .rodata .rodata* .srodata .srodata*)
+        *libinit*.a:*.o* (.text *.text* .rodata .rodata* .srodata .srodata*)
+        *libbase*.a:*.o* (.text *.text* .rodata .rodata* .srodata .srodata*)
+        *libposix*.a:*.o*(.text *.text* .rodata .rodata* .srodata .srodata*)
+        *libcsysdeps*.a:*.o*(.text *.text* .rodata .rodata* .srodata .srodata*)
+        *libcmsis*.a:*.o* (.text *.text* .rodata .rodata* .srodata .srodata*)
+        *libcsysdeps*.a:*.o* (.text *.text* .rodata .rodata* .srodata .srodata*)
+        *liblinux*.a:*.o*(.text *.text* .rodata .rodata* .srodata .srodata*)
+        *libsec*.a:*.o*(.text *.text* .rodata .rodata* .srodata .srodata*)
+        *kernel/osal*.a:*.o* (.text *.text* .rodata .rodata* .srodata .srodata*)
+        *libc.a:*.o*  (.text .text* .rodata .rodata* .srodata .srodata*)
+        *libm.a:*.o*  (.text .text* .rodata .rodata* .srodata .srodata*)
+        *libsegger.a:*.o*  (.text .text* .rodata .rodata* .srodata .srodata*)
+        *libboundscheck.a:*.o*  (.text .text* .rodata .rodata* .srodata .srodata*)
+        *libgcc.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        *libtest_usb_unified.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        *(.text.__riscv_*)
+
+        /* lpc */
+        *utils/pm/pm*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        *lpc*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        *clocks*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        *chip_bs25*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        *hal_reboot*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        *hal_reg_config*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        *ulp_aon*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+
+        /* Drivers */
+
+        /* ------------------------------eflash------------------------------- */
+        *libeflash*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        *libhal_eflash*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+
+        /* -------------------------------gpio-------------------------------- */
+        *gpio*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+
+        /* -------------------------------i2c--------------------------------- */
+        *i2c*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+
+        /* -------------------------------ipc----------------------------------*/
+        *ipc_old*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+
+        /* -------------------------------spi---------------------------------- */
+#ifndef SLEM_CARKEY
+        *spi*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+
+        /* -------------------------------usb------------------------------- */
+        UBS_MODULE
+        MOUSE_FUNC
+        DONGLE_FUNC
+
+        /* -------------------------------adc------------------------------- */
+        *libadc*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        *libhal_adc*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+
+        /* -------------------------------pinctrl-------------------------------- */
+        *pinctrl*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+
+        /* --------------------------------qdec---------------------------------- */
+        *libqdec*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        *libhal_qdec*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+
+        /* --------------------------------pwm---------------------------------- */
+        *libpwm*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        *libhal_pwm*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+
+        /* ---------------------------------keyscan------------------------------------ */
+        *libkeyscan*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        *libhal_keyscan*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+
+        /* -----------------------------i2s--------------------------------- */
+        *i2s*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        *sio*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+#endif
+
+        /* -----------------------------systick-------------------------------- */
+        *systick*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+
+        /* -------------------------------tcxo---------------------------------- */
+        *tcxo*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+
+        /* ------------------------------timer---------------------------------- */
+        *timer*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+
+        /* -------------------------------uart----------------------------------- */
+        *uart*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+
+        /* -----------------------------watchdog--------------------------------- */
+        *watchdog*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+
+        /* ----------------------------rtc_unified------------------------------- */
+        *rtc_unified*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+
+        /* -------------------------------flash---------------------------------- */
+        *libflash*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+
+        /* ----------------------------------xip-------------------------------------- */
+        /* *xip*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*) */
+
+        /* ---------------------------------pdm------------------------------------------ */
+        /* *pdm*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*) */
+        /* ------------------------------otp--------------------------------------*/
+        *otp*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+
+        /* --------------------------------dma-------------------------------------- */
+        /* *dma*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*) */
+
+        /* -------------------------------pmp------------------------------------ */
+        /* *pmp*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*) */
+
+        /* -----------------------------cpu_trace--------------------------------- */
+        /* *cpu_trace*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*) */
+
+        /* -----------------------------sec-------------------------------------- */
+        /* *libsec_*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*) */
+        /* *libcipher*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*) */
+        /* *libhash*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*) */
+        /* *libkm*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*) */
+        /* *libpke*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*) */
+        /* *libtrng*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*) */
+        *utils/sec_boot*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        *utils/pal*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        *chips/bs25/pm*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        /* config */
+        *drivers/chips/bs25/interrupt/interrupt*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        *lib3x_embed_flash*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        *lib3x_hal_embed_flash*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        *lib3x_embed_flash_port*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        *libota_port_bs25*.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        /* Libs */
+        /* *lib/nlibc*.o (.text .text* .rodata .rodata* .srodata .srodata*) */
+        /* *lib/ota*.o (.text .text* .rodata .rodata* .srodata .srodata*) */
+        *libc.a:*.o*  (.text .text* .rodata .rodata* .srodata .srodata*)
+        *libnon_os.a:*.o*  (.text .text* .rodata .rodata* .srodata .srodata*)
+
+        *libgcc.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+
+        /* alg lib*/
+        *libai_toothbrush.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+
+        *libl2hc_dec_itcm.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        *libopus_dec_itcm.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        *libopus_enc_itcm.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        *libsbc_dec_itcm.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        *libsbc_enc_itcm.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+
+        *libsbc_enc.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        *libsbc_dec.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        *libopus_enc_flash.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        *libopus_dec_flash.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        *libl2hc_enc.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        *libl2hc_dec_flash.a:*.o* (.text .text* .rodata .rodata* .srodata .srodata*)
+        /* bth sdk */
+        /* *libbt_host_sdk.a:*.o* (.text .text*  .rodata .rodata* .srodata .srodata*) */
+        *libgle_app.a:*ssap_s*.o* (.text .text*  .rodata .rodata* .srodata .srodata*)
+
+        . = ALIGN(8);
+
+    }  > ITCM AT > FLASH_PROGRAM
+#ifdef SLEM_CARKEY
+    .key_ramtext :
+    {
+        . = ALIGN(8);
+
+        *basicMath.c.obj*(.text .text*)
+        *esprit1_2.c.obj*(.text .text*)
+        *protocol/bt/algorithm/posalg/cal_dis/blas_LINUX.a:*.o(.text .text*)
+        *protocol/bt/algorithm/posalg/cal_dis/libf2c.a:*.o(.text .text*)
+        *caxpy.c.obj*(.text .text*)
+        *ccopy.c.obj*(.text .text*)
+        *cdotc.c.obj*(.text .text*)
+        *cdotu.c.obj*(.text .text*)
+        *cgemm.c.obj*(.text .text*)
+        *cgemv.c.obj*(.text .text*)
+        *cgerc.c.obj*(.text .text*)
+        *chemv.c.obj*(.text .text*)
+        *cher2.c.obj*(.text .text*)
+        *cher2k.c.obj*(.text .text*)
+        *cscal.c.obj*(.text .text*)
+        *csscal.c.obj*(.text .text*)
+        *cswap.c.obj*(.text .text*)
+        *ctrmm.c.obj*(.text .text*)
+        *ctrmv.c.obj*(.text .text*)
+        *ctrsv.c.obj*(.text .text*)
+        *icamax.c.obj*(.text .text*)
+        *isamax.c.obj*(.text .text*)
+        *scasum.c.obj*(.text .text*)
+        *scnrm2.c.obj*(.text .text*)
+        *sscal.c.obj*(.text .text*)
+        *lsame.c.obj*(.text .text*)
+        *scabs1.c.obj*(.text .text*)
+
+        *c_abs.c.obj*(.text .text*)
+        *c_div.c.obj*(.text .text*)
+        *sfe.c.obj*(.text .text*)
+        *c_sqrt.c.obj*(.text .text*)
+        *fmt.c.obj*(.text .text*)
+        *err.c.obj*(.text .text*)
+        *exit_.c.obj*(.text .text*)
+        *f77_aloc.c.obj*(.text .text*)
+        *open.c.obj*(.text .text*)
+        *cabs.c.obj*(.text .text*)
+        *close.c.obj*(.text .text*)
+        *fmtlib.c.obj*(.text .text*)
+        *i_nint.c.obj*(.text .text*)
+        *wrtfmt.c.obj*(.text .text*)
+        *pow_ci.c.obj*(.text .text*)
+        *pow_ri.c.obj*(.text .text*)
+        *pow_zi.c.obj*(.text .text*)
+        *r_cnjg.c.obj*(.text .text*)
+        *r_imag.c.obj*(.text .text*)
+        *r_lg10.c.obj*(.text .text*)
+        *r_sign.c.obj*(.text .text*)
+        *s_cat.c.obj*(.text .text*)
+        *s_cmp.c.obj*(.text .text*)
+        *s_copy.c.obj*(.text .text*)
+        *sig_die.c.obj*(.text .text*)
+        *wsfe.c.obj*(.text .text*)
+        *endfile.c.obj*(.text .text*)
+        *wref.c.obj*(.text .text*)
+        *util.c.obj*(.text .text*)
+
+        . = ALIGN(8);
+    }  > ITCM AT > FLASH_PROGRAM
+#endif
+}
+/* INCLUDE apps.lds */
+__ramtext_end__ = .;
+__ramtext_size__ = __ramtext_end__ - __ramtext_begin__;
+
+SECTIONS
+{
+    /* Code and const data */
+    .text :
+    {
+        FILL(0xFF)
+        *(.text)
+        *(.text*)
+        . = ALIGN(4);
+        __zinitcall_run_start = .;
+       KEEP (*(.zinitcall.run*.init))
+       __zinitcall_run_end = .;
+       . = ALIGN(4);
+        *(.itcm.text*)
+        *(.flashtext)
+        *(.flashtext*)
+        *(.rodata)
+        *(.rodata*)
+        KEEP (*(.rodata.info))
+        KEEP (*(.gdb_debug))
+        . = ALIGN(8);
+    } > FLASH_PROGRAM
+
+    g_ram_begin = ORIGIN(DTCM);
+    g_ram_size = LENGTH(DTCM);
+
+    /* Initialised data */
+    .data :
+    {
+        FILL(0xFF)
+        __data_load__ = LOADADDR(.data);
+        __data_begin__ = .;
+        *(.data)
+        *(.data*)
+        *(.got)
+        *(.got*)
+        *(.igot)
+        *(.igot*)
+        *(.libc.errno*)
+        _gp_ = . + 0x800;
+        *(.sdata)
+        *(.sdata*)
+        . = ALIGN(8);
+        __data_end__ = .;
+    } > DTCM AT > FLASH_PROGRAM
+    __data_size__ = __data_end__ - __data_begin__;
+
+#if !defined(LITEOS_208)
+    /* Uninitialised data */
+    .bss (NOLOAD) :
+    {
+#else
+    .bss  (NOLOAD) : ALIGN(0x80)
+    {
+        PROVIDE (__int_stack_start = .);
+        *(.int_stack);
+        . = ALIGN(0x4);
+        PROVIDE (__int_stack_end = .);
+#endif
+        . = ALIGN(8);
+        __bss_begin__ = .;
+        *(.bss)
+        *(.bss*)
+        *(.sbss)
+        *(.sbss*)
+        *(COMMON)
+        . = ALIGN(8);
+        __bss_end__ = . ;
+    } > DTCM
+    __bss_size__ = __bss_end__ - __bss_begin__;
+
+    /* Like Uninitialised data, but we don't want to 0 it. Stores backtrace among other things. */
+    .preserve (NOLOAD):
+    {
+        . = ALIGN(8);
+        *(preserve)
+    } > PRESERVE_SHARE_MEM
+
+    /* The internal heap uses whatever RAM space remains and so must be the last section for SRAM in the linker script. */
+    .heap (NOLOAD):
+    {
+        . = ALIGN(8);
+        g_intheap_begin = ABSOLUTE(.);
+        g_intheap_size = (ORIGIN(DTCM) + LENGTH(DTCM)) - g_intheap_begin;
+    } > DTCM
+
+#if HADM_POOL_SIZE != 0
+    .algo_mem (NOLOAD):
+    {
+        . = ALIGN(8);
+        g_key_algo_start = ABSOLUTE(.);
+        g_key_algo_size = (ORIGIN(HADM_DTCM) + LENGTH(HADM_DTCM)) - g_key_algo_start;
+    } > HADM_DTCM
+#endif
+
+    ipc_share_mem (NOLOAD) :
+    {
+        . = ALIGN(8);
+        __ipc_share_mem_start__ = .;
+        KEEP(*(.ipc_share_mem))
+        KEEP(*(.ipc_share_mem*))
+        __ipc_share_mem_end__ = .;
+    } > IPC_SHARE_MEM
+
+    /* The System Status Area is under the IPC mailboxes */
+    .sys_clocks (NOLOAD):
+    {
+        . = ALIGN(8);
+        __sys_clocks_start__ = .;
+        *(.sys_clocks)
+        *(.sys_clocks*)
+        __sys_clocks_end__ = .;
+    } > SYSTEM_CLOCKS
+
+    .sys_status (NOLOAD) :
+    {
+        . = ALIGN(8);
+        __sys_status_start__ = .;
+        *(.sys_status)
+        *(.sys_status*)
+        __sys_status_end__ = .;
+    } > SYSTEM_STATUS
+
+    .cputrace_mem (NOLOAD):
+    {
+        . = ALIGN(8);
+        KEEP(*(cputrace_mem))
+    } > CPUTRACE_RAM
+
+    .afe_diag_mem (NOLOAD):
+    {
+        . = ALIGN(8);
+        KEEP(*(afe_diag_mem))
+    } > AFE_DIAG_MEM
+
+#ifdef OS_DFX_SUPPORT
+    .os_info (NOLOAD):
+    {
+        . = ALIGN(8);
+        *(os_info)
+    } > OS_INFO_DFX
+#endif
+}

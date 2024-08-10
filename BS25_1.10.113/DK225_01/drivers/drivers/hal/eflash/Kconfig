@@ -1,0 +1,33 @@
+#===============================================================================
+# @brief    Kconfig file.
+# Copyright (c) @CompanyNameMagicTag 2023-2023. All rights reserved.
+#===============================================================================
+config VIRTUAL_EMBED_FLASH
+    bool
+    prompt "adapt fpga"
+    default y
+    depends on DRIVER_SUPPORT_EFLASH
+
+config REAL_EMBED_FLASH
+    bool
+    prompt "adapt asic"
+    default y
+    depends on DRIVER_SUPPORT_EFLASH
+
+config ERASE_VERIFY
+    bool
+    prompt "Verify mode erase operation"
+    default y
+    depends on REAL_EMBED_FLASH
+
+config PULL_UP_PULL_DOWN_WRITE
+    bool
+    prompt "protect eflash"
+    default y
+    depends on DRIVER_SUPPORT_EFLASH
+
+config SET_NVR_FUNCTION
+    bool
+    prompt "set CFG_NVR"
+    default y
+    depends on DRIVER_SUPPORT_EFLASH

@@ -1,0 +1,42 @@
+{
+    "all": {
+        "CLOCKSettings": {},
+        "SAMPLE Settings": {},
+        "PLIC Settings": {},
+        "MACRO Settings": {},
+        "gpio": {
+            "GPIO": {}
+        },
+        "pinName": [],
+        "GPIO Settings": {},
+        "DMA Settings": {}
+    },
+    "enabled": [],
+    "info": {
+        "board": "bs25",
+        "chipName": "bs25",
+        "clockName": "clock3",
+        "seriesName": "bs25",
+        "package": "CSP/TFBGA",
+        "package path": "",
+        "package version": "1.0",
+        "part": "",
+        "needSDK": true,
+        "pins": {}
+    },
+    "part": {},
+    "base": {
+        "GPIO": {
+            "GPIO": ""
+        },
+        "DMA": {
+            "SrcByteOrder": "Big endian",
+            "DestByteOrder": "Big endian"
+        }
+    },
+    "selectPinName": {},
+    "configType": "menu",
+    "deleteType": "moduleDelete",
+    "globalCheckResult": {},
+    "globalCheckItem": {}
+}

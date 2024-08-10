@@ -1,0 +1,10 @@
+{
+    "OUT_BIN_DIR" : "interim_binary/bs25/bin",
+    "OUT_BIN_NAME" : "bs25_all_nv.bin",
+    "BUILD_TEMP_PATH" : "output/bs25",
+
+    "NV_TARGET_JSON_PATH" : "middleware/chips/bs25/nv/nv_config/cfg/nv_target.json",
+    "NV_RELATIVE_PATH" : "output/bs25/nv_file",
+    "NV_DEFAULT_CFG_DIR" : "middleware/chips/bs25/nv/nv_config/cfg",
+    "DATABASE_TXT_FILE" : "output/bs25/nv_file"
+}

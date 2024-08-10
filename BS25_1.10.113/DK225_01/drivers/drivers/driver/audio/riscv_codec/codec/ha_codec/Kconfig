@@ -1,0 +1,64 @@
+#===============================================================================
+# @brief    Kconfig file.
+# Copyright (c) @CompanyNameMagicTag 2022-2022. All rights reserved.
+#===============================================================================
+
+#sbc
+config DRIVER_SUPPORT_SBC
+    bool
+    prompt "SBC_CODEC"
+    default y
+    help 
+        This option means support sbc codec.
+
+if DRIVER_SUPPORT_SBC
+menu "SBC_DEC Configuration"
+    comment "Config SBC DEC"
+    osource "drivers/drivers/driver/audio/riscv_codec/codec/ha_codec/sbc_dec/Kconfig"
+endmenu
+
+menu "SBC_ENC Configuration"
+    comment "Config SBC ENC"
+    osource "drivers/drivers/driver/audio/riscv_codec/codec/ha_codec/sbc_enc/Kconfig"
+endmenu
+endif
+
+#opus
+config DRIVER_SUPPORT_OPUS
+    bool
+    prompt "OPUS_CODEC"
+    default y
+    help 
+        This option means support opus codec.
+
+if DRIVER_SUPPORT_OPUS
+menu "OPUS_DEC Configuration"
+    comment "Config OPUS DEC"
+    osource "drivers/drivers/driver/audio/riscv_codec/codec/ha_codec/opus_dec/Kconfig"
+endmenu
+
+menu "OPUS_ENC Configuration"
+    comment "Config OPUS ENC"
+    osource "drivers/drivers/driver/audio/riscv_codec/codec/ha_codec/opus_enc/Kconfig"
+endmenu
+endif
+
+#l2hc
+config DRIVER_SUPPORT_L2HC
+    bool
+    prompt "L2HC_CODEC"
+    default y
+    help 
+        This option means support l2hc codec.
+
+if DRIVER_SUPPORT_L2HC
+menu "L2HC_DEC Configuration"
+    comment "Config L2HC DEC"
+    osource "drivers/drivers/driver/audio/riscv_codec/codec/ha_codec/l2hc_dec/Kconfig"
+endmenu
+
+menu "L2HC_ENC Configuration"
+    comment "Config L2HC ENC"
+    osource "drivers/drivers/driver/audio/riscv_codec/codec/ha_codec/l2hc_enc/Kconfig"
+endmenu
+endif

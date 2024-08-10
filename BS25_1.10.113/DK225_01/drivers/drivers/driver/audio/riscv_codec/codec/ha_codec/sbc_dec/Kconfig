@@ -1,0 +1,23 @@
+#===============================================================================
+# @brief    Kconfig file.
+# Copyright (c) @CompanyNameMagicTag 2022-2022. All rights reserved.
+#===============================================================================
+
+config SBC_DEC
+    bool
+    prompt "SBC_DEC"
+    default y
+    help
+        This option means support audio SBC_DEC.
+
+if SBC_DEC
+config SBC_DEC_7K_TO_ITCM
+    bool
+    prompt "sbc dec link 6.34k to ITCM"
+    default y
+
+config SBC_DEC_ALL_TO_ITCM
+    bool
+    prompt "sbc dec link all files (12.22k) to ITCM"
+    default n
+endif

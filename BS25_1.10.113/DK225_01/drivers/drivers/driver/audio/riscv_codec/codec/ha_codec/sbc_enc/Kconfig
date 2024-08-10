@@ -1,0 +1,23 @@
+#===============================================================================
+# @brief    Kconfig file.
+# Copyright (c) @CompanyNameMagicTag 2022-2022. All rights reserved.
+#===============================================================================
+
+config SBC_ENC
+    bool
+    prompt "SBC_ENC"
+    default y
+    help
+        This option means support audio SBC_ENC.
+
+if SBC_ENC
+config SBC_ENC_5K_TO_ITCM
+    bool
+    prompt "sbc enc link 4.52k to ITCM"
+    default y
+
+config SBC_ENC_ALL_TO_ITCM
+    bool
+    prompt "sbc enc link all files (8.48k) to ITCM"
+    default n
+endif

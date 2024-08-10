@@ -1,0 +1,30 @@
+#===============================================================================
+# @brief    Kconfig file.
+# Copyright (c) @CompanyNameMagicTag 2022-2022. All rights reserved.
+#===============================================================================
+
+config OPUS_ENC
+    bool
+    prompt "OPUS_ENC"
+    default y
+    help
+        This option means support audio OPUS_ENC.
+
+if OPUS_ENC
+config OPUS_ENC_30K_TO_ITCM
+    bool
+    prompt "opus enc link 30k to ITCM"
+    default y
+
+if OPUS_ENC_30K_TO_ITCM
+config OPUS_ENC_48K_2_5MS_VERSION
+    bool
+    prompt "opus enc for 48k samplerate 2.5ms"
+    default n
+endif
+
+config OPUS_ENC_ALL_TO_ITCM
+    bool
+    prompt "opus enc link all files to ITCM"
+    default n
+endif

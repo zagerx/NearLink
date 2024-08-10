@@ -1,0 +1,23 @@
+#===============================================================================
+# @brief    Kconfig file.
+# Copyright (c) @CompanyNameMagicTag 2022-2022. All rights reserved.
+#===============================================================================
+
+config L2HC_DEC
+    bool
+    prompt "L2HC_DEC"
+    default y
+    help
+        This option means support audio L2HC_DEC.
+
+if L2HC_DEC
+config L2HC_DEC_16K_LIB
+    bool
+    prompt "L2HC 16k samplerate lib"
+    default y
+
+config L2HC_DEC_48K_LIB
+    bool
+    prompt "L2HC 48k samplerate lib"
+    default n
+endif

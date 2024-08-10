@@ -1,0 +1,61 @@
+#===============================================================================
+# @brief    Kconfig file.
+# Copyright (c) @CompanyNameMagicTag 2023-2023. All rights reserved.
+#===============================================================================
+choice
+    prompt "Select SLE type"
+    default SAMPLE_SUPPORT_SLE_AMIC_VDT_DONGLE
+    config SAMPLE_SUPPORT_SLE_AMIC_VDT_DONGLE
+        bool "Enable SLE Dongle sample."
+    config SAMPLE_SUPPORT_SLE_AMIC_VDT_SERVER
+        bool "Enable SLE Server sample."
+endchoice
+
+choice
+    prompt "Select PDM sample rate"
+    default SLE_PDM_AMIC_SAMPLE_RATE_16K
+    config SLE_PDM_AMIC_SAMPLE_RATE_8K
+        bool "PDM sample rate is 8K"
+    config SLE_PDM_AMIC_SAMPLE_RATE_16K
+        bool "PDM sample rate is 16K"
+    config SLE_PDM_AMIC_SAMPLE_RATE_32K
+        bool "PDM sample rate is 32K"
+    config SLE_PDM_AMIC_SAMPLE_RATE_48K
+        bool "PDM sample rate is 48K"
+    config SLE_PDM_AMIC_SAMPLE_RATE_96K
+        bool "PDM sample rate is 96K"
+endchoice
+
+config USB_UAC_MAX_RECORD_SIZE
+    hex
+    prompt "Set the max recorder size of USB UAC."
+    depends on SAMPLE_SUPPORT_SLE_AMIC_VDT_SERVER
+    default 0x400
+    help
+        This option means the max recorder size of USB UAC.
+
+config USB_PDM_TRANSFER_LEN_BY_DMA
+    int
+    prompt "Set the length of transfer by DMA."
+    depends on SAMPLE_SUPPORT_SLE_AMIC_VDT_SERVER
+    default 128
+    help
+        This option means the length of transfer by DMA.
+
+config ADC_USE_PIN1
+    int
+    prompt "Choose ADC USE pin1."
+    depends on SAMPLE_SUPPORT_SLE_AMIC_VDT_SERVER
+    default 30
+
+config ADC_USE_PIN2
+    int
+    prompt "Choose ADC USE pin2."
+    depends on SAMPLE_SUPPORT_SLE_AMIC_VDT_SERVER
+    default 31
+
+config ADC_PIN_MODE
+    int
+    prompt "Choose ADC pin mode."
+    depends on SAMPLE_SUPPORT_SLE_AMIC_VDT_SERVER
+    default 0

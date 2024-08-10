@@ -1,0 +1,28 @@
+#===============================================================================
+# @brief    Kconfig file.
+# Copyright (c) @CompanyNameMagicTag 2022-2022. All rights reserved.
+#===============================================================================
+
+config IPC_USING_SW_MAILBOX
+    bool
+    prompt "Using the software mailbox"
+    default y
+    depends on DRIVER_SUPPORT_IPC
+
+config IPC_USING_RING_BUFFER_MAILBOX
+    bool
+    prompt "Using the Ring Buffer mailbox"
+    default n
+    depends on DRIVER_SUPPORT_IPC
+
+config IPC_USING_HW_MAILBOX
+    bool
+    prompt "Using the Hardware mailbox"
+    default n
+    depends on DRIVER_SUPPORT_IPC
+
+config IPC_SEND_MSG_MAX_WAIT_TIME_MS
+    hex
+    prompt "The timeout of IPC wait condition when IPC send message synchronously, uint is ms"
+    default 0x400
+

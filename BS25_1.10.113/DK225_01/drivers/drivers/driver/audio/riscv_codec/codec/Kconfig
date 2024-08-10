@@ -1,0 +1,18 @@
+#===============================================================================
+# @brief    Kconfig file.
+# Copyright (c) @CompanyNameMagicTag 2022-2022. All rights reserved.
+#===============================================================================
+
+config DRIVER_SUPPORT_AUDIO_CODEC
+    bool
+    prompt "AUDIO_CODEC"
+    default y
+    help 
+        This option means support audio codec.
+
+if DRIVER_SUPPORT_AUDIO_CODEC
+menu "AUDIO_CODEC Configuration"
+    comment "Config audio codec"
+    osource "drivers/drivers/driver/audio/riscv_codec/codec/ha_codec/Kconfig"
+endmenu
+endif

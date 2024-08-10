@@ -1,0 +1,27 @@
+#===============================================================================
+# @brief    Kconfig file.
+# Copyright (c) @CompanyNameMagicTag 2023-2023. All rights reserved.
+#===============================================================================
+
+choice
+    prompt "Select SLE type"
+    default SAMPLE_DUAL_MODE_SLE_SERVER
+    config SAMPLE_DUAL_MODE_SLE_SERVER
+        bool "Enable SLE server sample."
+    config SAMPLE_DUAL_MODE_SLE_CLIENT
+        bool "Enable SLE client sample."
+endchoice
+
+menu "Select SLE server protocol"
+    config SUPPORT_SLE_PERIPHERAL
+        bool
+        prompt "Select sle peripheral"
+        default y
+        depends on SAMPLE_DUAL_MODE_SLE_SERVER
+
+    config SUPPORT_SLE_CENTRAL
+        bool 
+        prompt "Select sle central"
+        default n
+        depends on SAMPLE_DUAL_MODE_SLE_CLIENT
+endmenu

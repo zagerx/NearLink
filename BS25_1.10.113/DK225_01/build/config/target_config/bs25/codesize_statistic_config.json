@@ -1,0 +1,38 @@
+'component_group': [
+    'uart',
+    'watchdog',
+    'qdec',
+    'keyscan',
+    'timer',
+    'systick',
+    'tcxo',
+    'dma',
+    'pinctrl',
+    'gpio',
+    'spi',
+    'i2c',
+    'ipc',
+    'pwm',
+    'adc',
+    'flash',
+    'xip',
+],
+group_details = {
+    'uart':     ['uart',         'hal_uart',        'uart_porting'      ]
+    'watchdog': ['watchdog',     'hal_watchdog',    'watchdog_porting'  ]
+    'qdec':     ['qdec',         'hal_qdec',        'qdec_porting'      ]
+    'keyscan':  ['keyscan',      'hal_keyscan',     'keyscan_porting'   ]
+    'timer':    ['drv_timer',    'hal_timer',       'timer_porting'     ]
+    'systick':  ['systick',      'hal_systick',     'systick_porting'   ]
+    'tcxo':     ['tcxo',         'hal_tcxo',        'tcxo_porting'      ]
+    'dma':      ['dma',          'hal_dma',         'dma_porting'       ]
+    'pinctrl':  ['pinctrl',      'hal_pinctrl',     'pinctrl_porting'   ]
+    'gpio':     ['gpio',         'hal_gpio',        'gpio_porting'      ]
+    'spi':      ['spi',          'hal_spi',         'spi_porting'       ]
+    'i2c':      ['i2c',          'hal_i2c',         'i2c_porting'       ]
+    'ipc':      ['ipc',          'hal_ipc',         'ipc_porting'       ]
+    'pwm':      ['pwm',          'hal_pwm',         'pwm_porting'       ]
+    'adc':      ['adc',          'hal_adc',         'adc_porting'       ]
+    'flash':    ['flash',                           'flash_porting'     ]
+    'xip':      [                'hal_xip',         'xip_porting'       ]
+}
