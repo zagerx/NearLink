@@ -8,9 +8,8 @@
 #include "boards.h"
 
 #define TASKS_TEST_TASK_STACK_SIZE    0x1000
-#define TASKS_TEST_TASK_PRIO          (osPriority_t)(17)
+#define TASKS_TEST_TASK_PRIO          (osPriority_t)(18)
 #define TASKS_TEST_DURATION_MS        1000
-
 
 
 static void *task_thread(const char *arg)
@@ -29,9 +28,10 @@ static void *task_thread(const char *arg)
     uapi_gpio_set_val(BSP_LED_2, GPIO_LEVEL_LOW);
     uapi_gpio_set_val(BSP_LED_3, GPIO_LEVEL_LOW);
     uapi_gpio_set_val(BSP_LED_4, GPIO_LEVEL_LOW);
+     
     while (1) {
-        osDelay(TASKS_TEST_DURATION_MS);
         uapi_gpio_toggle(BSP_LED_4);
+        osDelay(TASKS_TEST_DURATION_MS);
     }
     return NULL;
 }

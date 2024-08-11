@@ -38,18 +38,22 @@ static void *ble_uart_server_task(const char *arg)
 {
     unused(arg);
     osDelay(BLE_UART_BT_STACK_POWER_MS);
+
+    osal_printk("-----------------ble_uart_server_task Init Start----------------\n");
+
     ble_uart_server_init();
     errcode_t ret = uapi_uart_register_rx_callback(CONFIG_BLE_UART_BUS,
                                                    UART_RX_CONDITION_FULL_OR_SUFFICIENT_DATA_OR_IDLE,
                                                    1, ble_uart_read_int_handler);
-    osal_printk("ble_uart_server_task");
     if (ret != ERRCODE_SUCC) {
-        osal_printk("Register uart callback fail.");
+        osal_printk("Register uart callback fail.\n");
         return NULL;
     }
 
+    osal_printk("----------------ble_uart_server_task Init Stop--------------\n");
     while (1) {
-        osDelay(BLE_UART_TASK_DURATION_MS);
+
+        osDelay(5);//不能小于5ms
     }
 
     return NULL;

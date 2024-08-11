@@ -29,7 +29,7 @@ if(DEFINED CONFIG_ENABLE_NFC_SAMPLE)
     add_subdirectory_if_exist(nfc)
 endif()
 
-add_subdirectory_if_exist(project_base)
+#add_subdirectory_if_exist(project_base)
 
 
 set(PRIVATE_HEADER

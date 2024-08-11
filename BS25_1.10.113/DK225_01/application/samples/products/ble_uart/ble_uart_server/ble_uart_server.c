@@ -36,13 +36,12 @@
 
 static uint16_t g_ble_uart_conn_id;
 static uint8_t g_ble_uart_name_value[] = { 'b', 'l', 'e', '_', 'u', 'a', 'r', 't', '\0' };
-static uint8_t g_uart_server_app_uuid[] = { 0x00, 0x00 };
+static uint8_t g_uart_server_app_uuid[] = { 0x31, 0x69 };
 static uint8_t g_ble_uart_server_addr[] = { 0x11, 0x22, 0x33, 0x44, 0x55, 0x66 };
 static uint8_t g_server_id = INVALID_SERVER_ID;
 static uint8_t g_connection_state = 0;
 static uint16_t g_notify_indicate_handle = 0;
 static uint8_t g_service_num = 0;
-uint8_t TX_characters_value[] = { 0x55, 0xAA };
 
 
 /* 将uint16的uuid数字转化为bt_uuid_t */
@@ -73,6 +72,8 @@ static void ble_uart_add_service(void)
 /* 添加uart发送服务的所有特征和描述符 */
 static void ble_uart_add_tx_characters_and_descriptors(uint8_t server_id, uint16_t srvc_handle)
 {
+    uint8_t TX_characters_value[] = { 0x55, 0xAA };
+
     osal_printk("%s TX characters:%d srv_handle:%d \n", BLE_UART_SERVER_LOG, server_id, srvc_handle);
     bt_uuid_t characters_uuid = { 0 };
     bts_data_to_uuid_len2(BLE_UART_CHARACTERISTIC_UUID_TX, &characters_uuid);
@@ -215,26 +216,22 @@ static void ble_uart_receive_write_req_cbk(uint8_t server_id, uint16_t conn_id, 
 static void ble_uart_receive_read_req_cbk(uint8_t server_id, uint16_t conn_id, gatts_req_read_cb_t *read_cb_para,
     errcode_t status)
 {
-    osal_printk("%s ReceiveReadReq--server_id:%d conn_id:%d\n", BLE_UART_SERVER_LOG, server_id, conn_id);
-    osal_printk("%s request_id:%d, att_handle:%d offset:%d, need_rsp:%d, is_long:%d\n",
-                BLE_UART_SERVER_LOG, read_cb_para->request_id, read_cb_para->handle, read_cb_para->offset,
-                read_cb_para->need_rsp, read_cb_para->is_long);
-    osal_printk("%s status:%d\n", BLE_UART_SERVER_LOG, status);
+    // osal_printk("%s ReceiveReadReq--server_id:%d conn_id:%d\n", BLE_UART_SERVER_LOG, server_id, conn_id);
+    // osal_printk("%s request_id:%d, att_handle:%d offset:%d, need_rsp:%d, is_long:%d\n",
+    //             BLE_UART_SERVER_LOG, read_cb_para->request_id, read_cb_para->handle, read_cb_para->offset,
+    //             read_cb_para->need_rsp, read_cb_para->is_long);
+    // osal_printk("%s status:%d\n", BLE_UART_SERVER_LOG, status);
 
-    /*characters_value*/
-    // static uint32_t i = 0;
-    TX_characters_value[0] = 0x66;
-    TX_characters_value[1] = 0x22;
+    unused(status);
+    unused(server_id);
+    unused(conn_id);
+    unused(read_cb_para);
+    uint8_t  buffer[2] = {0x66, 0x22};
+    static uint32_t cout = 0;
+    buffer[0] = cout++;
+    buffer[1] = cout++;        
+    ble_uart_server_send_input_report(buffer, 2);
 
-    // bt_uuid_t characters_uuid = { 0 };
-    // bts_data_to_uuid_len2(BLE_UART_CHARACTERISTIC_UUID_TX, &characters_uuid);
-    // gatts_add_chara_info_t character;
-    // character.chara_uuid = characters_uuid;
-    // character.properties = GATT_CHARACTER_PROPERTY_BIT_NOTIFY | GATT_CHARACTER_PROPERTY_BIT_READ;
-    // character.permissions = GATT_ATTRIBUTE_PERMISSION_READ | GATT_ATTRIBUTE_PERMISSION_WRITE;
-    // character.value_len = sizeof(TX_characters_value);
-    // character.value = TX_characters_value;
-    // gatts_add_characteristic(1, 14, &character);
 }
 
 static void ble_uart_mtu_changed_cbk(uint8_t server_id, uint16_t conn_id, uint16_t mtu_size, errcode_t status)
@@ -351,7 +348,7 @@ errcode_t ble_uart_server_send_input_report(const uint8_t *data, uint16_t len)
     param.attr_handle = g_notify_indicate_handle;
     param.value_len = len;
     param.value = osal_vmalloc(len);
-    osal_printk("%s send input report indicate_handle:%d\n", BLE_UART_SERVER_LOG, g_notify_indicate_handle);
+    // osal_printk("%s send input report indicate_handle:%d\n", BLE_UART_SERVER_LOG, g_notify_indicate_handle);
     if (param.value == NULL) {
         osal_printk("%s send input report new fail\n", BLE_UART_SERVER_ERROR);
         return ERRCODE_BT_MALLOC_FAIL;
