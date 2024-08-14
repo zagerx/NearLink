@@ -50,12 +50,10 @@ static void *ble_uart_server_task(const char *arg)
         return NULL;
     }
 
-    osal_printk("----------------ble_uart_server_task Init Stop--------------\n");
+    osal_printk("----------------ble_uart_server_task Init Stop--------------把\n");
     while (1) {
-
         osDelay(5);//不能小于5ms
     }
-
     return NULL;
 }
 #elif defined(CONFIG_SAMPLE_SUPPORT_BLE_UART_CLIENT)

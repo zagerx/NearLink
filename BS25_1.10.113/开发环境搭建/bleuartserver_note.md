@@ -20,10 +20,6 @@
 - `关键词`：`属性`
 
 
-
-
-
-
 ## 实现蓝牙心率计步骤
 
 - 两个`默认服务`
@@ -43,9 +39,68 @@
 - 心率特征的标准UUID:`0x2A37`
 
 ### 具体操作
-
 - 设置心率服务的读写特征
 
 
+## 代码ble_uart_task分析
+
+### ble_uart_server_task启动
+- 代码
+```C
+    ble_uart_server_init();
+    errcode_t ret = uapi_uart_register_rx_callback(CONFIG_BLE_UART_BUS,
+                                                   UART_RX_CONDITION_FULL_OR_SUFFICIENT_DATA_OR_IDLE,
+                                                   1, ble_uart_read_int_handler);
+```
+- 日志
+```
+-----------------ble_uart_server_task Init Start----------------
+[GAP service register][device name] handle: 0x0006, value handle: 0x0007
+[GAP service register][device appearance] handle: 0x0008, value handle: 0x0009
+[GAP service register][prefer conn param] handle: 0x000a, value handle: 0x000b
+[ble uart server] beginning add service
+ble_uart_server_task Init Stop
+[ble uart server] ble_enable status: 0
+[ble uart server] add characters_and_descriptors cbk service:1, srv_handle:14, uuid_len:2, status:0, uuid:18 0d 
+[ble uart server] TX characters:1 srv_handle:14 
+[ble uart server] characters_uuid:2a 37
+[ble uart server] ccc_uuid:2a 37
+[ble uart server] start service: 1 service_hdl: 1 status: 0
+[ble uart server] add character cbk service:1 service_hdl: 14 char_hdl: 15 char_val_hdl: 16 uuid_len: 2 
+uuid:2a 37 [ble uart server] status:0 indicate_handle:16
+[ble uart server] service:1 service_hdl: 14 desc_hdl: 17 uuid_len: 2 
+uuid:29 02 [ble uart server] status:0
+[ble uart server] start service: 1 service_hdl: 5 status: 0
+[ble uart server] start service cbk , start adv
+[ble uart adv] ble_uart_set_adv_data adv_handle 1, len:24, data:?
+[ble uart adv] ble_uart_start_adv adv_id 1
+[ACore] ble set adv param min_interval:0x30, max interval:0x60, adv_type:0, duration:0
+
+[ACore] gap ble start adv in, adv_id:1
+[ble uart server] start service: 1 service_hdl: 14 status: 0
+[ble uart server] adv enable cbk adv_id:1 status:1
+```
 
 
+
+### 蓝牙协议栈启动/liteos启动
+```
+SSB|Debug uart init succ
+SSB|System Power On
+SSB|System Reboot cause:0xf0f0, total reboot count:0, exception reboot count:0
+SSB|actual mempool size=134464, free size=19856 max_size=154320
+SSB|sizeof(conn_mem_stru *)=4 sizeof(conn_mem_stru)=20
+SSB|mem manage cost size 32
+SSB|g_flash_mode = 0
+\sBS25-ssb-codeloader?賊eSSB|code finish codeloader
+SSB|mode flag is ffffffff
+SSB|sec check.
+SSB|jump_to_cimage :2, addr:0x10000
+[osal_msg_queue_create:25]:qName:dfx_msg qID=0x0 
+[APPS]Read customized nv success!cpu 0 entering scheduler
+[1J[11H[31mWelcome to Test Suite
+[osal_msg_queue_create:25]:qName:test_suite_queue qID=0x2 
+[34m
+Enter Command >>> APP|version: BS25 1.10.113
+[ACore] ble enable cbk in, event:9
+```

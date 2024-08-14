@@ -336,7 +336,7 @@ void ble_uart_server_init(void)
         return;
     }
     ble_uart_add_service(); /* 添加uart服务 */
-    osal_printk("%s beginning add service\r\n", BLE_UART_SERVER_LOG);
+    osal_printk("%s beginning add service-----app_uuid = 0x%02x g_server_id = %d\r\n", BLE_UART_SERVER_LOG,(app_uuid.uuid[0]|(app_uuid.uuid[1]<<8)),g_server_id);
     bth_ota_init();
 }
 
